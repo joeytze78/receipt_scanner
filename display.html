@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Captured Image & OCR Result</title>
+    <style>
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 20px auto;
+            border: 2px solid black;
+        }
+        a {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            text-decoration: none;
+            color: white;
+            background-color: blue;
+            padding: 10px;
+            width: 150px;
+            margin: auto;
+        }
+        #ocrResult {
+            max-width: 80%;
+            margin: 20px auto;
+            padding: 10px;
+            background: #f4f4f4;
+            border: 1px solid #ccc;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <h2 style="text-align: center;">Captured Image</h2>
+    <img id="capturedImage" alt="Captured receipt will appear here">
+    <h2 style="text-align: center;">OCR Result</h2>
+    <div id="ocrResult">Processing OCR...</div>
+    <a href="index.html">Back</a>
+
+    <script>
+        // Retrieve the image from localStorage
+        const imageSrc = localStorage.getItem('capturedImage');
+        if (!imageSrc) {
+            alert("No image captured!");
+            window.location.href = "index.html"; // Redirect if no image is found
+        } else {
+            document.getElementById('capturedImage').src = imageSrc;
+            processOCR(imageSrc);
+        }
+
+        async function processOCR(base64Image) {
+            try {
+                const blob = dataURItoBlob(base64Image);
+                const formData = new FormData();
+                formData.append("file", blob, "receipt.jpg");
+
+                const response = await fetch("https://ocr.asprise.com/api/receipt", {
+                    method: "POST",
+                    body: formData
+                });
+
+                const result = await response.json();
+                document.getElementById("ocrResult").innerText = JSON.stringify(result, null, 2);
+            } catch (error) {
+                document.getElementById("ocrResult").innerText = "OCR Processing Failed: " + error;
+            }
+        }
+
+        // Function to convert base64 image to Blob
+        function dataURItoBlob(dataURI) {
+            let byteString = atob(dataURI.split(',')[1]);
+            let mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+            let arrayBuffer = new ArrayBuffer(byteString.length);
+            let ia = new Uint8Array(arrayBuffer);
+            for (let i = 0; i < byteString.length; i++) {
+                ia[i] = byteString.charCodeAt(i);
+            }
+            return new Blob([arrayBuffer], { type: mimeString });
+        }
+    </script>
+</body>
+</html>

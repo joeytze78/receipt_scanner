@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Receipt Scanner</title>
+    <script type="text/javascript" src="https://unpkg.com/webcam-easy@1.1.1/dist/webcam-easy.min.js"></script>
+    <style>
+        a {
+            padding: 10px;
+            background-color: blanchedalmond;
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+            display: inline-block;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <video id="webCam" autoplay playsinline width="800" height="600"></video>
+    <canvas id="canvas" style="display: none;"></canvas>
+    <a id="snap">SNAP</a>
+
+    <script>
+        const webCamElement = document.getElementById('webCam');
+        const canvasElement = document.getElementById('canvas');
+        const snapButton = document.getElementById('snap');
+
+        const webcam = new Webcam(webCamElement, 'user', canvasElement);
+
+        webcam.start()
+            .then(() => console.log("Webcam started successfully"))
+            .catch(err => console.error("Error starting webcam:", err));
+
+        function takeAPicture() {
+            let picture = webcam.snap();
+            localStorage.setItem('capturedImage', picture); // Store the image in localStorage
+            window.location.href = 'display.html'; // Redirect to the display page
+        }
+
+        snapButton.addEventListener('click', takeAPicture);
+    </script>
+</body>
+</html>
