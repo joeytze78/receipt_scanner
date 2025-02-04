@@ -6,40 +6,67 @@
     <title>Receipt Scanner</title>
     <script type="text/javascript" src="https://unpkg.com/webcam-easy@1.1.1/dist/webcam-easy.min.js"></script>
     <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f5f5f5;
+        }
+
+        video {
+            width: 100%;
+            max-width: 350px; /* Adjusts size based on screen */
+            height: 550px; /* Keeps it taller for receipts */
+            object-fit: cover;
+            border: 2px solid black;
+            border-radius: 10px;
+        }
+
+        canvas {
+            display: none;
+        }
+
         a {
-            padding: 10px;
-            background-color: blanchedalmond;
-            color: black;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
             text-decoration: none;
-            cursor: pointer;
-            display: inline-block;
-            margin-top: 10px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        a:hover {
+            background-color: #0056b3;
         }
     </style>
 </head>
 <body>
-    <video id="webCam" autoplay playsinline width="800" height="600"></video>
-    <canvas id="canvas" style="display: none;"></canvas>
-    <a id="snap">SNAP</a>
+    <video id="webCam" autoplay playsinline></video>
+    <canvas id="canvas"></canvas>
+    <a id="snap" href="#" download="receipt_scan.png">SNAP</a>
 
     <script>
         const webCamElement = document.getElementById('webCam');
         const canvasElement = document.getElementById('canvas');
-        const snapButton = document.getElementById('snap');
 
-        const webcam = new Webcam(webCamElement, 'user', canvasElement);
+        // Use 'environment' to select rear camera
+        const webcam = new Webcam(webCamElement, 'environment', canvasElement, {
+            width: 350, // Adjusted for receipts
+            height: 550
+        });
 
         webcam.start()
-            .then(() => console.log("Webcam started successfully"))
+            .then(() => console.log("Rear camera started successfully"))
             .catch(err => console.error("Error starting webcam:", err));
 
-        function takeAPicture() {
+        // Capture Image on Click
+        document.getElementById('snap').addEventListener('click', function () {
             let picture = webcam.snap();
-            localStorage.setItem('capturedImage', picture); // Store the image in localStorage
-            window.location.href = 'display.html'; // Redirect to the display page
-        }
-
-        snapButton.addEventListener('click', takeAPicture);
+            this.href = picture; // Set download link to the captured image
+        });
     </script>
 </body>
 </html>
