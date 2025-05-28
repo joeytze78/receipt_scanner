@@ -5,12 +5,47 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Captured Image & OCR Result</title>
     <style>
-        img {
-            max-width: 100%;
-            height: auto;
-            display: block;
-            margin: 20px auto;
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            width: 100%;
+            margin-top: 40px;
+        }
+        .left, .right {
+            flex: 1;
+            max-width: 500px;
+            margin: 0 20px;
+        }
+        .left {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .right {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #capturedImage {
+            width: 100%;
+            max-width: 350px;
+            aspect-ratio: 7 / 11;
+            object-fit: cover;
             border: 2px solid black;
+            border-radius: 10px;
+            margin-top: 20px;
+            background: #fff;
+        }
+        #ocrResult {
+            max-width: 100%;
+            margin: 20px 0;
+            padding: 10px;
+            background: #f4f4f4;
+            border: 1px solid #ccc;
+            white-space: pre-wrap;
+            font-family: monospace;
+            min-height: 200px;
         }
         a {
             display: block;
@@ -23,23 +58,20 @@
             width: 150px;
             margin: auto;
         }
-        #ocrResult {
-            max-width: 80%;
-            margin: 20px auto;
-            padding: 10px;
-            background: #f4f4f4;
-            border: 1px solid #ccc;
-            white-space: pre-wrap;
-            font-family: monospace;
-        }
     </style>
 </head>
 <body>
-    <h2 style="text-align: center;">Captured Image</h2>
-    <img id="capturedImage" alt="Captured receipt will appear here">
-    <h2 style="text-align: center;">OCR Result</h2>
-    <div id="ocrResult">Processing OCR...</div>
-    <a href="index.html">Back</a>
+    <div class="container">
+        <div class="left">
+            <h2>Captured Image</h2>
+            <img id="capturedImage" alt="Captured receipt will appear here">
+        </div>
+        <div class="right">
+            <h2>OCR Result</h2>
+            <div id="ocrResult">Processing OCR...</div>
+            <a href="index.html">Back</a>
+        </div>
+    </div>
 
     <script>
         // Retrieve the image from localStorage

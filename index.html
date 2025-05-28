@@ -45,27 +45,56 @@
 </head>
 <body>
     <video id="webCam" autoplay playsinline></video>
-    <canvas id="canvas"></canvas>
-    <a id="snap" href="#" download="receipt_scan.png">SNAP</a>
+    <canvas id="canvas" style="display: none;"></canvas>
+    <button id="snap" style="margin-top: 20px; padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">SNAP</button>
 
     <script>
         const webCamElement = document.getElementById('webCam');
         const canvasElement = document.getElementById('canvas');
+        let webcam;
 
-        // Use 'environment' to select rear camera
-        const webcam = new Webcam(webCamElement, 'environment', canvasElement, {
-            width: 350, // Adjusted for receipts
-            height: 550
-        });
+        // Initialize webcam
+        async function initWebcam() {
+            try {
+                webcam = new Webcam(webCamElement, 'environment', canvasElement, {
+                    width: 350,
+                    height: 550
+                });
+                await webcam.start();
+                console.log("Rear camera started successfully");
+            } catch (err) {
+                console.error("Error starting webcam:", err);
+                alert("Error starting camera. Please make sure you have granted camera permissions.");
+            }
+        }
 
-        webcam.start()
-            .then(() => console.log("Rear camera started successfully"))
-            .catch(err => console.error("Error starting webcam:", err));
+        // Start webcam when page loads
+        initWebcam();
 
         // Capture Image on Click
         document.getElementById('snap').addEventListener('click', function () {
-            let picture = webcam.snap();
-            this.href = picture; // Set download link to the captured image
+            try {
+                // Draw the current video frame to the canvas
+                const context = canvasElement.getContext('2d');
+
+                // Resize canvas to match the actual video feed
+                canvasElement.width = webCamElement.videoWidth;
+                canvasElement.height = webCamElement.videoHeight;
+
+                // Draw the full webcam image
+                context.drawImage(webCamElement, 0, 0, canvasElement.width, canvasElement.height);
+                // Get the image data from the canvas
+                let picture = canvasElement.toDataURL('image/png');
+                if (!picture) {
+                    alert("Failed to capture image. Please try again.");
+                    return;
+                }
+                localStorage.setItem('capturedImage', picture);
+                window.location.href = 'display.html';
+            } catch (error) {
+                console.error("Error capturing image:", error);
+                alert("Error capturing image. Please try again. Details: " + error);
+            }
         });
     </script>
 </body>
